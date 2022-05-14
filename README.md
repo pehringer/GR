@@ -20,11 +20,7 @@ Any syntax not specified is illegal and will cause an error.</p>
 <p><b>Line Format</b><br>
 A line consists of the following parts, in order:
 <ul>
-  <li>0 to N spaces and or tabs</li>
-  <li>1 to 1 commands (word format)</li>
-  <li>0 to N spaces and or tabs</li>
-  <li>0 to N parameters (word format)</li>
-  <li>0 to N spaces and or tabs</li>
+  <li>1 to N words (word format)</li>
   <li>0 to 1 comments (comment format)</li>
   <li>0 to 1 line feeds and or carriage returns</li>
 </ul>
@@ -39,8 +35,8 @@ The following also applies to a line:
 <p><b>Word Format</b><br>
 A word consists of the following parts, in order:
 <ul>
-  <li>1 to 1 lower or upper case letters</li>
   <li>0 to N spaces and or tabs</li>
+  <li>1 to 1 lower or upper case letters</li>
   <li>0 to 1 numbers (number format)</li>
 </ul>
 The following also applies to a word:
@@ -53,6 +49,7 @@ The following also applies to a word:
 <p><b>Number Format</b><br>
 A number consists of the following parts, in order:
 <ul>
+  <li>0 to N spaces and or tabs</li>
   <li>0 to 1 plus or minus signs</li>
   <li>1 to N digits</li>
   <li>0 to 1 periods</li>
