@@ -32,7 +32,7 @@ The following also applies to a line:
 
 <br>
 
-<p><b>command Format</b><br>
+<p><b>Command Format</b><br>
 A command consists of the following parts, in order:
 <ul>
   <li>0 to N spaces and or tabs</li>
@@ -46,6 +46,7 @@ The following also applies to a word:
   <li>Letter character is case insensitive.</li>
 </ul></p>
 
+<br>
 
 <p><b>Parameter Format</b><br>
 A command consists of the following parts, in order:
