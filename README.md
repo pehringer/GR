@@ -17,8 +17,8 @@ Any syntax not specified is illegal and will cause an error.</p>
 Lines consists of the following parts, in order:
 <ol>
   <li>Optional line delete character ('/').</li>
-  <li>Optional line number.</li>
-  <li>Any number of words, parameter settings, and comments.</li>
+  <li>Optional <b>line number</b>.</li>
+  <li>Any number of <b>word</b>s, parameter settings, and comments.</li>
   <li>End of line character ('\n' and or '\r').</li>
 </ol>
 The following also applies to lines:
