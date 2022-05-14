@@ -19,43 +19,45 @@ Any syntax not specified is illegal and will cause an error.</p>
 
 <p><b>Line Format</b><br>
 A line consists of the following parts, in order:
-<ol>
-  <li>One command word.</li>
-  <li>Zero or more parameter words.</li>
-  <li>Zero or more comments.</li>
-  <li>One carriage return ('\n') and or line feed ('\r') character.</li>
-</ol>
+<ul>
+  <li>0 to N spaces and or tabs</li>
+  <li>1 to 1 commands (word format)</li>
+  <li>0 to N spaces and or tabs</li>
+  <li>0 to N parameters (word format)</li>
+  <li>0 to N spaces and or tabs</li>
+  <li>0 to 1 comments (comment format)</li>
+  <li>0 to 1 line feeds and or carriage returns</li>
+</ul>
 The following also applies to a line:
 <ul>
-  <li>Up to 256 characters in length.</li>
+  <li>1 to 256 characters in length.</li>
   <li>Blank lines are allowed, and are ignored.</li>
-  <li>Zero or more space (' ') and or tab ('\t') characters can be before, after, and or between the above parts.</li>
 </ul></p>
 
 <br>
 
 <p><b>Word Format</b><br>
 A word consists of the following parts, in order:
-<ol>
-  <li>One letter character ('A'-'Z', 'a'-'z').</li>
-  <li>Zero to one numbers.</li>
-</ol>
+<ul>
+  <li>1 to 1 lower or upper case letters</li>
+  <li>0 to N spaces and or tabs</li>
+  <li>0 to 1 numbers (number format)</li>
+</ul>
 The following also applies to a word:
 <ul>
   <li>Letter character is case insensitive.</li>
-  <li>Zero or more space (' ') and or tab ('\t') characters can be before, after, and or between the above parts.</li>
 </ul></p>
 
 <br>
 
 <p><b>Number Format</b><br>
 A number consists of the following parts, in order:
-<ol>
-  <li>Zero to one plus ('+') or minus ('-') sign characters.</li>
-  <li>One or more digit ('0'-'9') characters.</li>
-  <li>Zero to one period ('.') characters.</li>
-  <li>Zero or more digit ('0'-'9') characters.</li>
-</ol>
+<ul>
+  <li>0 to 1 plus or minus signs</li>
+  <li>1 to N digits</li>
+  <li>0 to 1 periods</li>
+  <li>0 to N digits</li>
+</ul>
 The following also applies to a number:
 <ul>
   <li>Numbers without a sign are treated as positive values.</li>
