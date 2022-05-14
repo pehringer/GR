@@ -20,9 +20,9 @@ Any syntax not specified is illegal and will cause an error.</p>
 <p><b>Line Format</b><br>
 A line consists of the following parts, in order:
 <ul>
-  <li>1 to N words (word format)</li>
+  <li>0 to 1 commands (command format)</li>
   <li>0 to 1 comments (comment format)</li>
-  <li>0 to 1 line feeds and or carriage returns</li>
+  <li>1 to 1 line feeds and or carriage returns</li>
 </ul>
 The following also applies to a line:
 <ul>
@@ -32,8 +32,23 @@ The following also applies to a line:
 
 <br>
 
-<p><b>Word Format</b><br>
-A word consists of the following parts, in order:
+<p><b>command Format</b><br>
+A command consists of the following parts, in order:
+<ul>
+  <li>0 to N spaces and or tabs</li>
+  <li>1 to 1 lower or upper case letters</li>
+  <li>0 to N spaces and or tabs</li>
+  <li>1 to 5 digits</li>
+  <li>0 to N parameters (parameter format)</li>
+</ul>
+The following also applies to a word:
+<ul>
+  <li>Letter character is case insensitive.</li>
+</ul></p>
+
+
+<p><b>Parameter Format</b><br>
+A command consists of the following parts, in order:
 <ul>
   <li>0 to N spaces and or tabs</li>
   <li>1 to 1 lower or upper case letters</li>
