@@ -20,16 +20,16 @@ Any syntax not specified is illegal and will cause an error.</p>
 <p><b>Line Format</b><br>
 A line consists of the following parts, in order:
 <ol>
-  <li>Mandatory command word,</li>
-  <li>Optional parameter word(s).</li>
-  <li>Optional comment.</li>
-  <li>Mandatory carriage return ('\n') and or line feed ('\r') character(s).</li>
+  <li>One command word.</li>
+  <li>Zero or more parameter words.</li>
+  <li>Zero or more comments.</li>
+  <li>One carriage return ('\n') and or line feed ('\r') character.</li>
 </ol>
-The following also applies to lines:
+The following also applies to a line:
 <ul>
-  <li>Up to 256 characters long.</li>
+  <li>Up to 256 characters in length.</li>
   <li>Blank lines are allowed, and are ignored.</li>
-  <li>Any number of space (' ') and or tab ('\t') characters can be before, after, and or between the above parts.</li>
+  <li>Zero or more space (' ') and or tab ('\t') characters can be before, after, and or between the above parts.</li>
 </ul></p>
 
 <br>
@@ -37,13 +37,13 @@ The following also applies to lines:
 <p><b>Word Format</b><br>
 A word consists of the following parts, in order:
 <ol>
-  <li>Mandatory letter character ('A'-'Z', 'a'-'z').</li>
-  <li>Optional number.</li>
+  <li>One letter character ('A'-'Z', 'a'-'z').</li>
+  <li>Zero to one numbers.</li>
 </ol>
-The following also applies to words:
+The following also applies to a word:
 <ul>
   <li>Letter character is case insensitive.</li>
-  <li>Any number of spaces (' ') and or tabs ('\t') can be before, after, and or between the above parts.</li>
+  <li>Zero or more space (' ') and or tab ('\t') characters can be before, after, and or between the above parts.</li>
 </ul></p>
 
 <br>
@@ -51,24 +51,19 @@ The following also applies to words:
 <p><b>Number Format</b><br>
 A number consists of the following parts, in order:
 <ol>
-  <li>Optional plus ('+') or minus ('-') sign character.</li>
-  <li>Mandatory one or more digit ('0'-'9') characters.</li>
-  <li>Optional decimal point ('.') character.</li>
-  <li>Optional one or more digit ('0'-'9') characters.</li>
+  <li>Zero to one plus ('+') or minus ('-') sign characters.</li>
+  <li>One or more digit ('0'-'9') characters.</li>
+  <li>Zero to one period ('.') characters.</li>
+  <li>Zero or more digit ('0'-'9') characters.</li>
 </ol>
-The following also applies to NAMEs:
+The following also applies to a number:
 <ul>
-  <li></li>
-  <li></li>
-  <li></li>
+  <li>Numbers without a sign are treated as positive values.</li>
+  <li>Numbers without a period are treated as signed integer values.</li>
+  <li>Numbers with a period are treated as floating point values.</li>
 </ul></p>
 
-
-
-
-
-
-
+<br>
 
 <!--
 <p><b>NAME Format</b><br>
