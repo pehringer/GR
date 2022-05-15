@@ -1,15 +1,19 @@
 # G-Code Reader (gcr)
 
 ### Functionality
-Provides and interface to read in g-code commands from g-code files. Mainly targeted at reading the subset g-code commands and syntax that 3d printer slicers produce.
+Provides and interface to read in G-code commands from G-code files. Mainly targeted at reading the subset G-code commands and syntax that 3d printer slicers produce.
 
 ### Syntax Definitions
-The below syntax definitions are in Backus–Naur form (https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_formm)
-Any syntax not specified is illegal and will cause an error.
+Vaild G-code file syntax for the G-Code Reader (gcr) are defined below in Backus–Naur form. Any syntax that does not match these definitions will result in an error code and or undefined behavior. The definitions do not come from any one predefined standard, but rather results of my own research and experience with G-code.
 
+### Backus–Naur Form Exmaple.
+Backus–Naur form is a simple and precise way of expressing language syntax. For example a binary number can be defined in Backus–Naur form with the following:
+```
+<binary-number> ::= "0" | "1" | <binary-number> "0" | <binary-number> "1"
+```
+Where ```<binary-number> ::=``` defines that the tag ```binary-number``` is equivalent to the expression ```"0" | "1" | <binary-number> "0" | <binary-number> "1"```. Which expresses that a ```binary-number``` can equal the digit 0, OR can equal the digit 1, OR can equal another ```binary-number``` expression and the digit 0, OR can equal another ```binary-number``` expression and the digit 1. It is helpful to think of the plain symbols as functioning like a recursive functions base case, and the tags as functioning like a recursive functions recursive call. Backus–Naur form's simple OR and recursive operations allow for very complex definitions.
 
-
-### Allowed Characters
+###### Allowed Characters
 ```
 <decimal-point-character> ::= "."
 <delimiter-character> ::= "\n" | "\r"
@@ -19,17 +23,17 @@ Any syntax not specified is illegal and will cause an error.
 <white-space-characters> ::= " " | "\t"
 ```
 
-### White Space Syntax
+###### White Space Syntax
 ```
 <white-space> ::=  "" | <white-space-characters> | <white-space> <white-space-characters>
 ```
 
-### End of Line Syntax
+###### End of Line Syntax
 ```
 <end-of-line> ::= <delimiters> | <end-of-line> <delimiters>
 ```
 
-### Number Syntax
+###### Number Syntax
 ```
 <sign> ::= "" | <sign-characters>
 <whole-number> ::= <digit-character> | <digits> <digit-character>
@@ -37,9 +41,4 @@ Any syntax not specified is illegal and will cause an error.
 <fractional-number> ::= "" | <digit-character> | <digits> <digit-character>
 <integer> = <sign> <whole-number>
 <floating-point> ::= <sign> <whole-number> <decimal-point> <fractional-number>
-```
-
-###
-
-<line> ::= <end-of-line> | <comment> <end-of-line> | <command> <comment> <end-of-line>
 ```
