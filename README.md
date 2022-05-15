@@ -13,32 +13,60 @@ Backus–Naur form is a simple and precise way of expressing language syntax. Fo
 ```
 Where ```<binary-number> ::=``` defines that the tag ```binary-number``` is equivalent to the expression ```"0" | "1" | <binary-number> "0" | <binary-number> "1"```. Which expresses that a ```binary-number``` can equal the digit 0, OR can equal the digit 1, OR can equal another ```binary-number``` expression and the digit 0, OR can equal another ```binary-number``` expression and the digit 1. It is helpful to think of the plain symbols as functioning like a recursive functions base case, and the tags as functioning like a recursive functions recursive call. Backus–Naur form's simple OR and recursive operations allow for very complex definitions.
 
-###### Allowed Characters
+###### Vaild Characters
 ```
-<decimal-point-character> ::= "."
-<delimiter-character> ::= "\n" | "\r"
-<digit-character> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<letter-characters> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
-<sign-characters> ::= "-" | "+"
-<white-space-characters> ::= " " | "\t"
+<command-char> ::= "G" | "M" | "g" | "m"
+
+<digit-char> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+<delimiter-char> ::= "\n" | "\r"
+
+<parameter-char> ::= "E" | "F" | "I" | "P" | "R" | "S" | "T" | "X" | "Y" | "Z" | "e" | "f" | "i" | "p" | "r" | "s" | "t" | "x" | "y" | "z"
+
+<point-char> ::= "."
+
+<sign-char> ::= "-" | "+"
+
+<whitespace-char> ::= " " | "\t"
 ```
 
-###### White Space Syntax
+###### whitespace
 ```
-<white-space> ::=  "" | <white-space-characters> | <white-space> <white-space-characters>
-```
-
-###### End of Line Syntax
-```
-<end-of-line> ::= <delimiters> | <end-of-line> <delimiters>
+<whitespace> ::=  "" | <whitespace-char> | <whitespace> <whitespace-char>
 ```
 
-###### Number Syntax
+###### End of Line
 ```
-<sign> ::= "" | <sign-characters>
-<whole-number> ::= <digit-character> | <digits> <digit-character>
-<decimal-point> ::= "" | <decimal-point-character>
-<fractional-number> ::= "" | <digit-character> | <digits> <digit-character>
-<integer> = <sign> <whole-number>
-<floating-point> ::= <sign> <whole-number> <decimal-point> <fractional-number>
+<end-of-line> ::= <delimiter-char> | <end-of-line> <delimiter-char>
 ```
+
+###### Numbers
+```
+<sign> ::= "" | <sign-char>
+
+<whole-number> ::= <digit-char> | <whole-number> <digit-char>
+
+<decimal-point> ::= "" | <point-char>
+
+<fractional-number> ::= "" | <fractional-number> <digit-char>
+
+<integer> = <whitespace> <sign> <whole-number>
+
+<floating-point> ::= <whitespace> <sign> <whole-number> <decimal-point> <fractional-number>
+```
+
+###### Parameter
+```
+<parameter> ::= "" | <parameter> <whitespace> <parameter-char> <floating-point>
+```
+
+###### Command
+```
+<command> ::= "" | <whitespace> <comamnd-char> <integer> <parameter>
+```
+
+
+
+
+
+
