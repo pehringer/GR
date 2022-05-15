@@ -1,99 +1,45 @@
-<h1> G-Code Reader (gcr) </h1>
+# G-Code Reader (gcr)
 
-<hr>
+### Functionality
+Provides and interface to read in g-code commands from g-code files. Mainly targeted at reading the subset g-code commands and syntax that 3d printer slicers produce.
 
-<h2>Functionality</h3>
-<p>Provides and interface to read in g-code commands from g-code files. Mainly targeted at reading the subset g-code commands and syntax that 3d printer slicers produce.</p>
+### Syntax Definitions
+The below syntax definitions are in Backus–Naur form (https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_formm)
+Any syntax not specified is illegal and will cause an error.
 
-<hr>
 
-<h2>Supported G-code Syntax</h3>
-<p>The below syntax definitions are subset of the NIST RS274NGC interpreter version 3, mixed and modified with various other source. The G-Code Reader (grc) suppoerts the below syntax defintions.</p>
 
-<br>
+### Allowed Characters
+```
+<decimal-point-character> ::= "."
+<delimiter-character> ::= "\n" | "\r"
+<digit-character> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+<letter-characters> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+<sign-characters> ::= "-" | "+"
+<white-space-characters> ::= " " | "\t"
+```
 
-<p><b>Syntax Errors</b><br>
-Any syntax not specified is illegal and will cause an error.</p>
+### White Space Syntax
+```
+<white-space> ::=  "" | <white-space-characters> | <white-space> <white-space-characters>
+```
 
-<br>
+### End of Line Syntax
+```
+<end-of-line> ::= <delimiters> | <end-of-line> <delimiters>
+```
 
-<p><b>Line Format</b><br>
-A line consists of the following parts, in order:
-<ul>
-  <li>0 to 1 commands (command format)</li>
-  <li>0 to 1 comments (comment format)</li>
-  <li>1 to 1 line feeds and or carriage returns</li>
-</ul>
-The following also applies to a line:
-<ul>
-  <li>1 to 256 characters in length.</li>
-  <li>Blank lines are allowed, and are ignored.</li>
-</ul></p>
+### Number Syntax
+```
+<sign> ::= "" | <sign-characters>
+<whole-number> ::= <digit-character> | <digits> <digit-character>
+<decimal-point> ::= "" | <decimal-point-character>
+<fractional-number> ::= "" | <digit-character> | <digits> <digit-character>
+<integer> = <sign> <whole-number>
+<floating-point> ::= <sign> <whole-number> <decimal-point> <fractional-number>
+```
 
-<br>
+###
 
-<p><b>Command Format</b><br>
-A command consists of the following parts, in order:
-<ul>
-  <li>0 to N spaces and or tabs</li>
-  <li>1 to 1 lower or upper case letters</li>
-  <li>0 to N spaces and or tabs</li>
-  <li>1 to 5 digits</li>
-  <li>0 to N parameters (parameter format)</li>
-</ul>
-The following also applies to a word:
-<ul>
-  <li>Letter character is case insensitive.</li>
-</ul></p>
-
-<br>
-
-<p><b>Parameter Format</b><br>
-A command consists of the following parts, in order:
-<ul>
-  <li>0 to N spaces and or tabs</li>
-  <li>1 to 1 lower or upper case letters</li>
-  <li>0 to 1 numbers (number format)</li>
-</ul>
-The following also applies to a word:
-<ul>
-  <li>Letter character is case insensitive.</li>
-</ul></p>
-
-<br>
-
-<p><b>Number Format</b><br>
-A number consists of the following parts, in order:
-<ul>
-  <li>0 to N spaces and or tabs</li>
-  <li>0 to 1 plus or minus signs</li>
-  <li>1 to N digits</li>
-  <li>0 to 1 periods</li>
-  <li>0 to N digits</li>
-</ul>
-The following also applies to a number:
-<ul>
-  <li>Numbers without a sign are treated as positive values.</li>
-  <li>Numbers without a period are treated as signed integer values.</li>
-  <li>Numbers with a period are treated as floating point values.</li>
-</ul></p>
-
-<br>
-
-<!--
-<p><b>NAME Format</b><br>
-NAMEs consists of the following parts, in order:
-<ol>
-  <li></li>
-  <li></li>
-  <li></li>
-</ol>
-The following also applies to NAMEs:
-<ul>
-  <li></li>
-  <li></li>
-  <li></li>
-</ul> 
-</p>
---!>
-
+<line> ::= <end-of-line> | <comment> <end-of-line> | <command> <comment> <end-of-line>
+```
