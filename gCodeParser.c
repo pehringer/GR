@@ -1,7 +1,52 @@
 #include<stdio.h>
 
 
-static int isArgument(char character)
+/*
+  Structures and Enumeration Below:
+*/
+
+
+
+
+
+/*
+  Lookup Tables Below:
+*/
+
+
+double tenToThePowerOfNegative[] =
+{
+  1.0,
+  0.1,
+  0.01,
+  0.001,
+  0.0001,
+  0.00001,
+  0.000001,
+  0.0000001,
+  0.00000001,
+  0.000000001,
+  0.0000000001
+};
+
+
+double tenToThePowerOfPositive[] =
+{
+  1.0,
+  10.0,
+  100.0,
+  1000.0,
+  10000.0,
+  100000.0,
+  1000000.0,
+  10000000.0,
+  100000000.0,
+  1000000000.0,
+  10000000000.0
+};
+
+
+static int isCharArgument(char character)
 {
   switch(character)
   {
@@ -31,7 +76,7 @@ static int isArgument(char character)
 }
 
 
-static int isCommand(char character)
+static int isCharCommand(char character)
 {
   switch(character)
   {
@@ -45,7 +90,7 @@ static int isCommand(char character)
 }
 
 
-static int isDigit(char character)
+static int isCharDigit(char character)
 {
   switch(character)
   {
@@ -65,7 +110,7 @@ static int isDigit(char character)
 }
 
 
-static int isEndOfLine(char character)
+static int isCharEndOfLine(char character)
 {
   switch(character)
   {
@@ -77,7 +122,20 @@ static int isEndOfLine(char character)
 }
 
 
-static int isWhitespace(char character)
+static int isCharSign(char character)
+{
+  switch(character)
+  {
+    case '+':
+      return 1;
+    case '-':
+      return -1;
+  }
+  return 0;
+}
+
+
+static int isCharWhitespace(char character)
 {
   switch(character)
   {
@@ -89,49 +147,59 @@ static int isWhitespace(char character)
 }
 
 
+/*
+  Number Parsing Below:
+*/
+
 
 const char* getWholeNumber(int *number, const char *string)
 {
   //Setup for starting at most signicant digit.
+  int placeValue = 0;
   double numberValue = 0.0;
-  double placeValue = 1.0;
 
   //Parse whole number.
-  while(isDigit(*string))
-    numberValue += (*(string++) - '0') * (placeValue /= 10);
-  *number = numberValue / placeValue;
+  while(isCharDigit(*string))
+    numberValue += (*(string++) - '0') * tenToThePowerOfNegative[++placeValue];
+  numberValue *= tenToThePowerOfPositive[placeValue];
 
+  //Return number and position.
+  *number = (int) numberValue;
   return string;
 }
+
 
 const char* getFraction(double *number, const char *string)
 {
   //Setup for starting at most signicant digit.
-  double placeValue = 1.0;
+  int placeValue = 0;
+  double numberValue = 0;
   if(*string == '.')
     string++;
 
   //Parse fraction.
-  while(isDigit(*string))
-    *number += (*(string++) - '0') * (placeValue /= 10);
+  while(isCharDigit(*string))
+    numberValue += (*(string++) - '0') * tenToThePowerOfNegative[++placeValue];
 
+  //Return number and position.
+  *number = numberValue;
   return string;
 }
+
 
 const char* getSign(int *sign, const char *string)
 {
   //Setup for starting at sign.
-  *sign = 1;
+  int signValue = isCharSign(*string);
 
   //Parse sign.
-  if(*string == '+')
+  if(signValue)
     string++;
-  else if(*string == '-')
-  {
-    *sign = -1;
-    string++;
-  }
+  else
+    signValue = 1;
 
+  //Return sign and position.
+  *sign = signValue;
   return string;
 }
 
@@ -144,9 +212,8 @@ const char* getIntegerNumber(int *number, const char *string)
   int wholeNumber;
   string = getWholeNumber(&wholeNumber, string);
 
-  //Calculate integer with components
+  //Calculate integer with components and return position.
   *number = sign * wholeNumber;
-
   return string;
 }
 
@@ -161,22 +228,53 @@ const char* getDecimalNumber(double *number, const char *string)
   double fraction;
   string = getFraction(&fraction, string);
 
-  //Calculate decimal with components.
+  //Calculate decimal with components and return position.
   *number = sign * (wholeNumber + fraction);
-
   return string;
 }
 
 
+/*
+  G-Code Parsing Below:
+*/
+
+
+const char* getCommand(char *type, int *number, const char *string)
+{
+  *type = '\0';
+  *number = 0;
+
+  //No command type found.
+  if(!isCharCommand(*string))
+    return string;
+
+  //No command number found.
+  const char *afterNumber = getWholeNumber(number, string + 1);
+  if(afterNumber == string + 1)
+    return string;
+
+  //Get command type.
+  *type = *string;
+
+  return afterNumber;
+}
+
+
+
+
+
+
 int main()
 {
-  int number1;
-  double number2;
-  const char *command = "g-24.1 t-24 x43.12";
-  printf("Command: %s\n", command);
+  char character;
+  int integer;
+  double decimal;
 
-  command = getDecimalNumber(&number2, command + 1);
-  printf("[%lf]%s\n", number2, command);
+  const char *remainingCommand = "M02 t-24 x43.12";
+  printf("Command: %s\n", remainingCommand);
+
+  remainingCommand = getCommand(&character, &integer, remainingCommand);
+  printf("[%c][%d]%s\n", character, integer, remainingCommand);
 
   return 0;
 }
