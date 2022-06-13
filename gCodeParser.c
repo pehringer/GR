@@ -14,7 +14,7 @@
 */
 
 
-double tenToThePowerOfNegative[] =
+static double tenToThePowerOfNegative[] =
 {
   1.0,
   0.1,
@@ -30,7 +30,7 @@ double tenToThePowerOfNegative[] =
 };
 
 
-double tenToThePowerOfPositive[] =
+static double tenToThePowerOfPositive[] =
 {
   1.0,
   10.0,
@@ -239,8 +239,17 @@ const char* getDecimalNumber(double *number, const char *string)
 */
 
 
+const char* skipWhitespace(const char *string)
+{
+  while(isCharWhitespace(*string))
+    string++;
+  return string;
+}
+
+
 const char* getCommand(char *type, int *number, const char *string)
 {
+  //Setup in case of no command found.
   *type = '\0';
   *number = 0;
 
@@ -248,9 +257,12 @@ const char* getCommand(char *type, int *number, const char *string)
   if(!isCharCommand(*string))
     return string;
 
+  //Get command number.
+  const char *afterSpace = skipWhitespace(string + 1);
+  const char *afterNumber = getWholeNumber(number, afterSpace);
+
   //No command number found.
-  const char *afterNumber = getWholeNumber(number, string + 1);
-  if(afterNumber == string + 1)
+  if(afterNumber == afterSpace)
     return string;
 
   //Get command type.
@@ -264,13 +276,16 @@ const char* getCommand(char *type, int *number, const char *string)
 
 
 
+
+
+
 int main()
 {
   char character;
   int integer;
   double decimal;
 
-  const char *remainingCommand = "M02 t-24 x43.12";
+  const char *remainingCommand = "M00002 t-24 x43.12";
   printf("Command: %s\n", remainingCommand);
 
   remainingCommand = getCommand(&character, &integer, remainingCommand);
