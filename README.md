@@ -24,14 +24,15 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Arguments
 ```
-<Argument-letter> ::= "E" | "F" | "I" | "P" | "R" | "S" | "T" | "X" | "Y" | "Z" | "e" | "f" | "i" | "p" | "r" | "s" | "t" | "x" | "y" | "z"
-<Arguments> ::= "" | <Argument-letter> <spacing> <decimal-number> <spacing> <Arguments>
+<argument-letter> ::= "E" | "F" | "I" | "P" | "R" | "S" | "T" | "X" | "Y" | "Z" | "e" | "f" | "i" | "p" | "r" | "s" | "t" | "x" | "y" | "z"
+<argument> ::=  "" | <argument-letter> | <argument-letter> <spacing> <decimal-number>
+<arguments> ::= "" | <argument> <spacing> <arguments>
 ```
 
 ###### Command
 ```
 <command-letter> ::= "G" | "M" | "g" | "m"
-<command> ::= "" | <comamnd-letter> <spacing> <whole-number> <spacing> <Arguments>
+<command> ::= "" | <comamnd-letter> <spacing> <whole-number> <spacing> <arguments>
 ```
 
 ###### Comment
