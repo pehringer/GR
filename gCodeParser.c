@@ -50,9 +50,10 @@ static double tenToPowerOfPositive[] =
 };
 
 
-#define IS_DIGIT_MASK    0x01
-#define IS_COMMAND_MASK  0x02
-#define IS_PARAMETER_MASK 0x04
+#define DIGIT_MASK      0x01
+#define EOL_MASK        0x02
+#define LETTER_MASK     0x04
+#define WHITESPACE_MASK 0x08
 
 
 static char charFlags[] =
@@ -66,11 +67,11 @@ static char charFlags[] =
   0x00, //006
   0x00, //007
   0x00, //008
-  0x00, //009 '\t'
-  0x00, //010 '\n'
+  0x08, //009 '\t'
+  0x02, //010 '\n'
   0x00, //011
   0x00, //012
-  0x00, //013 '\r'
+  0x02, //013 '\r'
   0x00, //014
   0x00, //015
   0x00, //016
@@ -89,7 +90,7 @@ static char charFlags[] =
   0x00, //029
   0x00, //030
   0x00, //031
-  0x00, //032 ' '
+  0x08, //032 ' '
   0x00, //033
   0x00, //034
   0x00, //035
@@ -122,29 +123,29 @@ static char charFlags[] =
   0x00, //062
   0x00, //063
   0x00, //064
-  0x00, //065
-  0x00, //066
-  0x00, //067
-  0x00, //068
+  0x04, //065 'A'
+  0x04, //066 'B'
+  0x04, //067 'C'
+  0x04, //068 'D'
   0x04, //069 'E'
   0x04, //070 'F'
-  0x02, //071 'G'
-  0x00, //072
+  0x04, //071 'G'
+  0x04, //072 'H'
   0x04, //073 'I'
   0x04, //074 'J'
-  0x00, //075
-  0x00, //076
-  0x02, //077 'M'
-  0x00, //078
-  0x00, //079
+  0x04, //075 'K'
+  0x04, //076 'L'
+  0x04, //077 'M'
+  0x04, //078 'N'
+  0x04, //079 'O'
   0x04, //080 'P'
   0x04, //081 'Q'
   0x04, //082 'R'
   0x04, //083 'S'
   0x04, //084 'T'
-  0x00, //085
-  0x00, //086
-  0x00, //087
+  0x04, //085 'U'
+  0x04, //086 'V'
+  0x04, //087 'W'
   0x04, //088 'X'
   0x04, //089 'Y'
   0x04, //090 'Z'
@@ -154,29 +155,29 @@ static char charFlags[] =
   0x00, //094
   0x00, //095
   0x00, //096
-  0x00, //097
-  0x00, //098
-  0x00, //099
-  0x00, //100
+  0x04, //097 'a'
+  0x04, //098 'b'
+  0x04, //099 'c'
+  0x04, //100 'd'
   0x04, //101 'e'
   0x04, //102 'f'
-  0x02, //103 'g'
-  0x00, //104
+  0x04, //103 'g'
+  0x04, //104 'h'
   0x04, //105 'i'
   0x04, //106 'j'
-  0x00, //107
-  0x00, //108
-  0x02, //109 'm'
-  0x00, //110
-  0x00, //111
+  0x04, //107 'k'
+  0x04, //108 'l'
+  0x04, //109 'm'
+  0x04, //110 'n'
+  0x04, //111 'o'
   0x04, //112 'p'
   0x04, //113 'q'
   0x04, //114 'r'
   0x04, //115 's'
   0x04, //116 't'
-  0x00, //117
-  0x00, //118
-  0x00, //119
+  0x04, //117 'u'
+  0x04, //118 'v'
+  0x04, //119 'w'
   0x04, //120 'x'
   0x04, //121 'y'
   0x04, //122 'z'
@@ -189,7 +190,7 @@ static char charFlags[] =
 
 
 /*
-  Number Parsing Below:
+  Parsing Below:
 */
 
 
@@ -200,7 +201,7 @@ const char* getWholeNumber(double *number, const char *string)
   int digitPlace = 0;
 
   //Parse whole number.
-  while(charFlags[*string] & IS_DIGIT_MASK)
+  while(charFlags[*string] & DIGIT_MASK)
     *number += (*(string++) - '0') * tenToPowerOfNegative[++digitPlace];
   *number *= tenToPowerOfPositive[digitPlace];
 
@@ -219,7 +220,7 @@ const char* getFraction(double *number, const char *string)
   int placeValue = 0;
 
   //Parse fraction.
-  while(charFlags[*string] & IS_DIGIT_MASK)
+  while(charFlags[*string] & DIGIT_MASK)
     *number += (*(string++) - '0') * tenToPowerOfNegative[++placeValue];
 
   return string;
@@ -270,19 +271,18 @@ const char* getDecimalNumber(double *number, const char *string)
 }
 
 
-/*
-  G-Code Parsing Below:
-*/
-
-
-const char* skipWhitespace(const char *string)
+const char* skipSpacing(const char *string)
 {
-  while(*string == ' ' || *string == '\t')
+  while(charFlags[*string] & WHITESPACE_MASK)
     string++;
   return string;
 }
 
+const char* getParameters(char *letters, double *numbers, const char *string);
 
+const char* getCommand(char* letters, double *numbers, const char *string);
+
+const char* getComment(char* comment, const char *string);
 
 
 int main()
