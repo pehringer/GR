@@ -10,18 +10,16 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 ```
 <character> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "|" | " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
 <digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<end-of-line>  ::= "\n" | "\r"
+<EOL>  ::= "\n" | "\r"
 <letter> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
 <whitespace> ::= " " | "\t"
 ```
 
 ###### Numbers
 ```
-<whole-number> ::= <digit> | <digit-char> <whole-number>
-<fraction> ::= "" | "." | "." <whole-number>
 <sign> ::= "" | "-" | "+"
-<integer-number> ::= "" | <sign> <whole-number>
-<decimal-number> ::= "" | <sign> <whole-number> <fraction>
+<digits> ::= <digit> | <digit-char> <whole-number>
+<number> ::= <sign> <digits> | <sign> <digits> "." | <sign> "." <digits>| <sign> <digits> "." <digits>
 ```
 
 ###### spacing
@@ -31,12 +29,12 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Parameters
 ```
-<parameters> ::= "" | <letter> <spacing> <parameters> | <letter> <spacing> <decimal-number> <spacing> <parameters>
+<parameters> ::= "" | <letter> <spacing> <parameters> | <letter> <spacing> <number> <spacing> <parameters>
 ```
 
 ###### Command
 ```
-<command> ::= "" | <letter> <spacing> <decimal-number> <spacing> <parameters>
+<command> ::= "" | <letter> <spacing> <number> <spacing> <parameters>
 ```
 
 ###### Comment
@@ -47,5 +45,5 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Line
 ```
-<line> ::= <spacing> <command> <comment> <end-of-line>
+<line> ::= <spacing> <command> <comment> <EOL>
 ```
