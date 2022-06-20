@@ -6,13 +6,6 @@
 */
 
 
-struct gCodeLine {
-  char comment[64];
-  char commandLetter[10];
-  double commandNumbers[10];
-};
-
-
 /*
   Lookup Tables Below:
 */
@@ -194,46 +187,13 @@ static char charFlags[] =
 */
 
 
-const char* getWholeNumber(double *number, const char *string)
+const char* getSignValue(double *value, const char *string)
 {
-  //Setup for starting at most signicant digit.
-  *number = 0.0;
-  int digitPlace = 0;
-
-  //Parse whole number.
-  while(charFlags[*string] & DIGIT_MASK)
-    *number += (*(string++) - '0') * tenToPowerOfNegative[++digitPlace];
-  *number *= tenToPowerOfPositive[digitPlace];
-
-  return string;
-}
-
-
-const char* getFraction(double *number, const char *string)
-{
-  //Skip decimal point.
-  if(*string == '.')
-    string++;
-
-  //Setup for starting at most signicant digit.
-  *number = 0.0;
-  int placeValue = 0;
-
-  //Parse fraction.
-  while(charFlags[*string] & DIGIT_MASK)
-    *number += (*(string++) - '0') * tenToPowerOfNegative[++placeValue];
-
-  return string;
-}
-
-
-const char* getSign(double *sign, const char *string)
-{
-  *sign = 1.0; //Numbers without signs are positive.
+  *value = 1.0; //Numbers are default positive.
 
   switch(*string)
   {
-    case '-': *sign = -1.0; //Number is negative.
+    case '-': *value = -1.0; //Number is negative.
     case '+': string++; //Iterate pass sign char.
   }
 
@@ -241,42 +201,47 @@ const char* getSign(double *sign, const char *string)
 }
 
 
-const char* getIntegerNumber(double *number, const char *string)
+const char* getDigitsValue(double *value, int fractional, const char *string)
 {
-  //Get integer components.
-  double sign;
-  string = getSign(&sign, string);
-  double wholeNumber;
-  string = getWholeNumber(&wholeNumber, string);
+  //Starting at most signicant digit of whole or fractional number.
+  *value = 0.0;
+  int digitPlace = 0;
 
-  //Calculate integer with components and return position.
-  *number = sign * wholeNumber;
+  //Parse digits to value.
+  while(charFlags[*string] & DIGIT_MASK)
+    *value += (*(string)++ - '0') * tenToPowerOfNegative[++digitPlace];
+
+  //Value is not fractional, shift value left of decimal point.
+  if(!fractional)
+    *value *= tenToPowerOfPositive[digitPlace];
+
   return string;
 }
 
 
-const char* getDecimalNumber(double *number, const char *string)
+const char* getNumberValue(double *value, const char *string)
 {
-  //Get decimal components.
+  //Parse out the numbers components.
   double sign;
-  string = getSign(&sign, string);
-  double wholeNumber;
-  string = getWholeNumber(&wholeNumber, string);
+  const char *afterSign = getSignValue(&sign, string);
+  double whole;
+  const char *afterWhole = getDigitsValue(&whole, 0, afterSign);
+  const char *afterDecimal = *afterWhole == '.' ? afterWhole + 1 : afterWhole;
   double fraction;
-  string = getFraction(&fraction, string);
+  const char *afterFraction = getDigitsValue(&fraction, 1, afterDecimal);
 
-  //Calculate decimal with components and return position.
-  *number = sign * (wholeNumber + fraction);
+  //Digit parsed, number parsed.
+  if(afterWhole - afterSign || afterFraction - afterDecimal)
+  {
+    *value = sign * (whole + fraction);
+    return afterFraction;
+  }
+
+  //No digits parsed, no number parsed.
+  *value = 0.0;
   return string;
 }
 
-
-const char* skipSpacing(const char *string)
-{
-  while(charFlags[*string] & WHITESPACE_MASK)
-    string++;
-  return string;
-}
 
 const char* getParameters(char *letters, double *numbers, const char *string);
 
