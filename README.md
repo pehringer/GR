@@ -17,9 +17,9 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Numbers
 ```
-<sign> ::= "" | "-" | "+"
-<digits> ::= <digit> | <digit-char> <whole-number>
-<number> ::= <sign> <digits> | <sign> <digits> "." | <sign> "." <digits>| <sign> <digits> "." <digits>
+<sign-value> ::= "" | "-" | "+"
+<digits-value> ::= <digit> | <digit> <digits-value>
+<number-value> ::= <sign-value> <digits-value> | <sign-value> <digits-value> "." | <sign-value> "." <digits-value>| <sign-value> <digits-value> "." <digits-value>
 ```
 
 ###### spacing
@@ -29,12 +29,12 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Parameters
 ```
-<parameters> ::= "" | <letter> <spacing> <parameters> | <letter> <spacing> <number> <spacing> <parameters>
+<parameters> ::= "" | <letter> <spacing> <parameters> | <letter> <spacing> <number-value> <spacing> <parameters>
 ```
 
 ###### Command
 ```
-<command> ::= "" | <letter> <spacing> <number> <spacing> <parameters>
+<command> ::= "" | <letter> <spacing> <number-value> <spacing> <parameters>
 ```
 
 ###### Comment
