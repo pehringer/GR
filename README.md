@@ -8,7 +8,7 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Characters Used By Syntax
 ```
-<character> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "|" | " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
+<character> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "|" | " " | "!" | "#" | "$" | "%" | "&" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
 <digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 <EOL>  ::= "\n" | "\r"
 <letter> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
@@ -17,33 +17,29 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Number Syntax
 ```
-<sign-value> ::= "" | "-" | "+"
-<digits-value> ::= <digit> | <digit> <digits-value>
-<number-value> ::= <sign-value> <digits-value> | <sign-value> <digits-value> "." | <sign-value> "." <digits-value>| <sign-value> <digits-value> "." <digits-value>
+<sign> ::= "" | "-" | "+"
+<digits> ::= <digit> | <digit> <digits>
+<number> ::= <sign> <digits> | <sign> <digits> "." | <sign> "." <digits>| <sign> <digits> "." <digits>
 ```
 
 ###### Spacing Syntax
 ```
-<spacing> ::=  "" | <whitespace> <spacing>
+<spacing> ::= <whitespace> | <whitespace> <spacing>
 ```
 
-###### Parameter Syntax
+###### Line Number Syntax
 ```
-<parameters> ::= "" | <letter> <spacing> <parameters> | <letter> <spacing> <number-value> <spacing> <parameters>
+<line-number> ::= "N" <digit-value> | "n" <digit-value>
 ```
 
-###### Command Syntax
+###### Argument Syntax
 ```
-<command> ::= "" | <letter> <spacing> <number-value> <spacing> <parameters>
+<argument> ::= <letter> | <letter> <number-value> | <letter> <spacing> <number-value>
 ```
 
 ###### Comment Syntax
 ```
 <text> ::= "" | <character> <text>
-<comment> ::= "" | ";" <text>
-```
-
-###### Line Syntax
-```
-<line> ::= <spacing> <command> <comment> <EOL>
+<in-line-comment> ::= "(" <text> ")"
+<end-line-comment> ::= ";" <text>
 ```
