@@ -11,35 +11,38 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 <digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 <EOL>  ::= "\n" | "\r"
 <letter> ::= "A" | "B" | "C" | "D" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "P" | "Q" | "R" | "S" | "T" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "p" | "q" | "r" | "s" | "t" | "x" | "y" | "z"
-<text> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "|" | " " | "!" | "#" | "$" | "%" | "&" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
-<whitespace> ::= " " | "\t"
 ```
 
 ###### Number Syntax
 ```
-<sign> ::= "" | "-" | "+"
+<sign> ::= "-" | "+" | ""
 <digits> ::= <digit> | <digit> <digits>
-<number> ::= <sign> <digits> | <sign> <digits> "." | <sign> "." <digits>| <sign> <digits> "." <digits>
+<number> ::= <sign> <digits> | <sign> <digits> "." | <sign> "." <digits>| <sign> <digits> "." <digits> | ""
 ```
 
-###### Spacing Syntax
+###### Whitespace Syntax
 ```
-<spacing> ::= <whitespace> | <whitespace> <spacing>
+<whitespace> ::= " " <whitespace> | "\t" <whitespace> | ""
 ```
 
 ###### Line Number Syntax
 ```
-<line-number> ::= "N" <digit-value> | "n" <digit-value>
+<line-number> ::= "N" <digits> | "n" <digits> | ""
 ```
 
 ###### Argument Syntax
 ```
-<argument> ::= <letter> | <letter> <number-value> | <letter> <spacing> <number-value>
+<argument> ::= <letter> <spacing> <number> | ""
 ```
 
 ###### Comment Syntax
 ```
-<text> ::= "" | <character> <text>
-<in-line-comment> ::= "(" <text> ")"
-<end-line-comment> ::= ";" <text>
+<in-comment> ::= "(" <text> ")" | ""
+<end-comment> ::= ";" <text> | ""
+```
+
+###### Line Syntax
+```
+<contents> ::= <argument> <spacing> <in-comment> <contents> | ""
+<line> ::= <line-number> <contents> <end-comment> <EOL>
 ```
