@@ -10,32 +10,27 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 ```
 <argument-char> ::= "A" | "B" | "C" | "D" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "P" | "Q" | "R" | "S" | "T" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "p" | "q" | "r" | "s" | "t" | "x" | "y" | "z"
 <digit-char> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<end-of-line-char> ::= "\n" | "\r"
-<line-number-char> ::= "N" | "n"
-<text-char> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | " " | "\t" | "|" | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
-<whitespace-char> ::= " " | "\t"
 ```
 
 ###### Number Syntax
 ```
 <sign> ::= "-" | "+" | ""
-<digits> ::= <digit-char> <digits> | <digit-char>
-<rational-number> ::= <sign> <digits> | <sign> <digits> "." | <sign> "." <digits>| <sign> <digits> "." <digits> | ""
+<digits> ::= <digit-char> <digits> | <digit-char> 
 ```
 
 ###### Line Number Syntax
 ```
-<line-number> ::= <line-number-char> <digits> | ""
+<line-number> ::= "N" <digits> | "n" <digits> | ""
 ```
 
 ###### Whitespace Syntax
 ```
-<whitespace> ::= <whitespace-char> <whitespace> | ""
+<whitespace> ::= " " <whitespace> | "\t" <whitespace> | ""
 ```
 
 ###### Argument Syntax
 ```
-<argument> ::= <argument-char> | <argument-char> <rational-number>
+<argument> ::= <argument-char> | <argument-char> <sign> <digits> | <argument-char> <sign> <digits> "." | <argument-char><sign> "." <digits>| <argument-char> <sign> <digits> "." <digits> | ""
 <argument-list> ::= <argument> <whitespace> <arguments> | <argument>
 <arguments> = <argument-list> | ""
 ```
@@ -53,10 +48,5 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### End Of Line Syntax
 ```
-<end-of-line> ::= <end-of-line-char> <end-of-line> | <end-of-line-char>
-```
-
-###### Line Syntax
-```
-<line> ::= <line-number> <whitespace> <arguments> <whitespace> <checksum> <whitespace> <comment> <end-of-line>
+<end-of-line> ::= "\n" <end-of-line> | "\r" <end-of-line> | "\n" | "\r"
 ```
