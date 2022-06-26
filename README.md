@@ -23,19 +23,21 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 <rational-number> ::= <sign> <digits> | <sign> <digits> "." | <sign> "." <digits>| <sign> <digits> "." <digits> | ""
 ```
 
-###### Whitespace Syntax
-```
-<whitespace> ::= <whitespace-char> <whitespace> | ""
-```
-
 ###### Line Number Syntax
 ```
 <line-number> ::= <line-number-char> <digits> | ""
 ```
 
+###### Whitespace Syntax
+```
+<whitespace> ::= <whitespace-char> <whitespace> | ""
+```
+
 ###### Argument Syntax
 ```
-<arguments> ::= <argument-char> <whitespace> <rational-number> <whitespace> <arguments> | ""
+<argument> ::= <argument-char> | <argument-char> <rational-number>
+<argument-list> ::= <argument> <whitespace> <arguments> | <argument>
+<arguments> = <argument-list> | ""
 ```
 
 ###### Checksum Syntax
@@ -45,7 +47,7 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Comment Syntax
 ```
-<text> ::= <text-char> <text> | ""
+<text> ::= <text-char> <opt-text> | ""
 <comment> ::= ";" <text> | ""
 ```
 
@@ -56,5 +58,5 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Line Syntax
 ```
-<line> ::= <line-number> <whitespace> <arguments> <checksum> <whitespace> <comment> <end-of-line>
+<line> ::= <line-number> <whitespace> <arguments> <whitespace> <checksum> <whitespace> <comment> <end-of-line>
 ```
