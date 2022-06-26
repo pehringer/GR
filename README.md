@@ -8,9 +8,12 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Characters Used By Syntax
 ```
+<argument-char> ::= "A" | "B" | "C" | "D" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "P" | "Q" | "R" | "S" | "T" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "p" | "q" | "r" | "s" | "t" | "x" | "y" | "z"
 <digit-char> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-<letter-char> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
-<symbol-char> ::=  "|" | " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
+<end-of-line-char> ::= "\n" | "\r"
+<line-number-char> ::= "N" | "n"
+<text-char> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | " " | "\t" | "|" | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~"
+<whitespace-char> ::= " " | "\t"
 ```
 
 ###### Number Syntax
@@ -22,33 +25,36 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 
 ###### Whitespace Syntax
 ```
-<whitespace> ::= " " <whitespace> | "\t" <whitespace> | ""
+<whitespace> ::= <whitespace-char> <whitespace> | ""
 ```
 
 ###### Line Number Syntax
 ```
-<line-number> ::= "N" <digits> | "n" <digits> | ""
+<line-number> ::= <line-number-char> <digits> | ""
 ```
 
 ###### Argument Syntax
 ```
-<argument> ::= <letter-char> <whitespace> <rational-number> | ""
+<arguments> ::= <argument-char> <whitespace> <rational-number> <whitespace> <arguments> | ""
+```
+
+###### Checksum Syntax
+```
+<checksum> ::= "*" <digits> | ""
 ```
 
 ###### Comment Syntax
 ```
-<text> ::= <digit-char> <text> | <letter-char> <text> | <symbol-char> <text> | <whitespace> <text> | ""
-<inline-comment> ::= "(" <text> ")" | ""
-<end-of-line-comment> ::= ";" <text> | ""
+<text> ::= <text-char> <text> | ""
+<comment> ::= ";" <text> | ""
 ```
 
 ###### End Of Line Syntax
 ```
-<end-of-line> ::= "\n" <end-of-line> | "\r" <end-of-line> | "\n" | "\r"
+<end-of-line> ::= <end-of-line-char> <end-of-line> | <end-of-line-char>
 ```
 
 ###### Line Syntax
 ```
-<contents> ::= <argument> <inline-comment> <whitespace> <contents> | ""
-<line> ::= <line-number> <contents> <end-of-line-comment> <end-of-line>
+<line> ::= <line-number> <whitespace> <arguments> <checksum> <whitespace> <comment> <end-of-line>
 ```
