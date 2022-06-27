@@ -6,47 +6,42 @@ Provides an interface to read in G-code commands from G-code files. Mainly targe
 ### G-Code Syntax Definitions
 Vaild G-code file syntax for the reader are defined below in Backus–Naur form. Any syntax that does not match these definitions will result in an error code and or undefined behavior. The below definitions do not come from any one predefined standard, but rather results of my own research and experience with G-code.
 
-###### Characters Used By Syntax
+###### Syntax Equivalent Characters
 ```
-<argument-char> ::= "A" | "B" | "C" | "D" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "P" | "Q" | "R" | "S" | "T" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "p" | "q" | "r" | "s" | "t" | "x" | "y" | "z"
+<argument-char> ::= "A" | "B" | "C" | "D" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "P" | "Q" | "R" | "S" | "T" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "p" | "q" | "r" | "s" | "t" | "x" | "y" | "z" | "*"
 <digit-char> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
-```
-
-###### Number Syntax
-```
-<sign> ::= "-" | "+" | ""
-<digits> ::= <digit-char> <digits> | <digit-char> 
-```
-
-###### Line Number Syntax
-```
-<line-number> ::= "N" <digits> | "n" <digits> | ""
-```
-
-###### Whitespace Syntax
-```
-<whitespace> ::= " " <whitespace> | "\t" <whitespace> | ""
+<newline-char> ::= "\n" | "\r"
+<text-char> ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "|" | "!" | "#" | "$" | "%" | "&" | "*" | "+" | "," | "-" | "." | "/" | ":" | ";" | ">" | "=" | "<" | "?" | "@" | "[" | "\" | "]" | "^" | "_" | "`" | "{" | "}" | "~" | " " | "\t"
+<whitespace-char> ::= " " | "\t"
 ```
 
 ###### Argument Syntax
 ```
-<argument> ::= <argument-char> | <argument-char> <sign> <digits> | <argument-char> <sign> <digits> "." | <argument-char><sign> "." <digits>| <argument-char> <sign> <digits> "." <digits> | ""
-<argument-list> ::= <argument> <whitespace> <arguments> | <argument>
-<arguments> = <argument-list> | ""
-```
-
-###### Checksum Syntax
-```
-<checksum> ::= "*" <digits> | ""
+<sign> ::= "+" | "-" | ""
+<digits> ::= <digit-char> <digits> | <digit-char>
+<number> ::= <sign> <digits> | <sign> <digits> "." | <sign> <digits> "." <digits> | <sign> "." <digits>
+<argument> ::= <argument-char> | <argument-char> <number>
 ```
 
 ###### Comment Syntax
 ```
-<text> ::= <text-char> <opt-text> | ""
-<comment> ::= ";" <text> | ""
+<text> ::= <text-char> <text> | ""
+<inline-comment> ::= "(" <text> ")"
+<ending-comment> ::= ";" <text>
 ```
 
-###### End Of Line Syntax
+###### Newline Syntax
 ```
-<end-of-line> ::= "\n" <end-of-line> | "\r" <end-of-line> | "\n" | "\r"
+<newline> ::= <newline-char> <newline> | <newline-char>
+```
+
+###### Whitespace Syntax
+```
+<whitespace> ::= <whitespace-char> <whitespace> | <whitespace-char>
+```
+
+###### Line Syntax
+```
+<contents> ::= <argument> <contents> | <inline-comment> <contents> | <whitespace> <contents> | ""
+<line> ::= <contents> <newline> | <contents> <ending-comment> <newline>
 ```
