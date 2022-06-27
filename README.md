@@ -19,15 +19,15 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 ```
 <sign> ::= "+" | "-" | ""
 <digits> ::= <digit-char> <digits> | <digit-char>
-<number> ::= <sign> <digits> | <sign> <digits> "." | <sign> <digits> "." <digits> | <sign> "." <digits>
-<argument> ::= <argument-char> | <argument-char> <number>
+<number> ::= <sign> <digits> | <sign> <digits> "." | <sign> <digits> "." <digits> | <sign> "." <digits> | ""
+<argument> ::= <argument-char> <number>
 ```
 
 ###### Comment Syntax
 ```
 <text> ::= <text-char> <text> | ""
 <inline-comment> ::= "(" <text> ")"
-<ending-comment> ::= ";" <text>
+<ending-comment> ::= ";" <text> | ""
 ```
 
 ###### Newline Syntax
@@ -43,5 +43,5 @@ Vaild G-code file syntax for the reader are defined below in Backus–Naur form.
 ###### Line Syntax
 ```
 <contents> ::= <argument> <contents> | <inline-comment> <contents> | <whitespace> <contents> | ""
-<line> ::= <contents> <newline> | <contents> <ending-comment> <newline>
+<line> ::= <contents> <ending-comment> <newline>
 ```
