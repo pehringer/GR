@@ -2,6 +2,11 @@
 
 
 /*
+  Parser Settings.
+*/
+
+
+/*
   Structures and Enumeration Below:
 */
 
@@ -11,7 +16,7 @@
 */
 
 
-static double tenToPowerOfNegative[] =
+static const double TEN_TO_POWER_NEGATIVE[] =
 {
   1.0,
   0.1,
@@ -27,7 +32,7 @@ static double tenToPowerOfNegative[] =
 };
 
 
-static double tenToPowerOfPositive[] =
+static const double TEN_TO_POWER_POSITIVE[] =
 {
   1.0,
   10.0,
@@ -43,13 +48,16 @@ static double tenToPowerOfPositive[] =
 };
 
 
-#define DIGIT_MASK      0x01
-#define EOL_MASK        0x02
-#define LETTER_MASK     0x04
-#define WHITESPACE_MASK 0x08
+//Bit flags for elements of CHAR_IS.
+static const char IS_ARGUMENT_CHAR   = 0x01;
+static const char IS_DIGIT_CHAR      = 0x02;
+static const char IS_NEWLINE_CHAR    = 0x04;
+static const char IS_TEXT_CHAR       = 0x08;
+static const char IS_WHITESPACE_CHAR = 0x10;
 
-
-static char charFlags[] =
+//Indexes are mapped to corresponding char values.
+//Each element holds a given chars bit flags.
+static const char CHAR_IS[] =
 {
   0x00, //000
   0x00, //001
@@ -60,11 +68,11 @@ static char charFlags[] =
   0x00, //006
   0x00, //007
   0x00, //008
-  0x08, //009 '\t'
-  0x02, //010 '\n'
+  0x18, //009 '\t'
+  0x0C, //010 '\n'
   0x00, //011
   0x00, //012
-  0x02, //013 '\r'
+  0x0C, //013 '\r'
   0x00, //014
   0x00, //015
   0x00, //016
@@ -83,101 +91,101 @@ static char charFlags[] =
   0x00, //029
   0x00, //030
   0x00, //031
-  0x08, //032 ' '
-  0x00, //033
-  0x00, //034
-  0x00, //035
-  0x00, //036
-  0x00, //037
-  0x00, //038
-  0x00, //039
-  0x00, //040
-  0x00, //041
-  0x00, //042
-  0x00, //043
-  0x00, //044
-  0x00, //045
-  0x00, //046
-  0x00, //047
-  0x01, //048 '0'
-  0x01, //049 '1'
-  0x01, //050 '2'
-  0x01, //051 '3'
-  0x01, //052 '4'
-  0x01, //053 '5'
-  0x01, //054 '6'
-  0x01, //055 '7'
-  0x01, //056 '8'
-  0x01, //057 '9'
-  0x00, //058
-  0x00, //059
-  0x00, //060
-  0x00, //061
-  0x00, //062
-  0x00, //063
-  0x00, //064
-  0x04, //065 'A'
-  0x04, //066 'B'
-  0x04, //067 'C'
-  0x04, //068 'D'
-  0x04, //069 'E'
-  0x04, //070 'F'
-  0x04, //071 'G'
-  0x04, //072 'H'
-  0x04, //073 'I'
-  0x04, //074 'J'
-  0x04, //075 'K'
-  0x04, //076 'L'
-  0x04, //077 'M'
-  0x04, //078 'N'
-  0x04, //079 'O'
-  0x04, //080 'P'
-  0x04, //081 'Q'
-  0x04, //082 'R'
-  0x04, //083 'S'
-  0x04, //084 'T'
-  0x04, //085 'U'
-  0x04, //086 'V'
-  0x04, //087 'W'
-  0x04, //088 'X'
-  0x04, //089 'Y'
-  0x04, //090 'Z'
-  0x00, //091
-  0x00, //092
-  0x00, //093
-  0x00, //094
-  0x00, //095
-  0x00, //096
-  0x04, //097 'a'
-  0x04, //098 'b'
-  0x04, //099 'c'
-  0x04, //100 'd'
-  0x04, //101 'e'
-  0x04, //102 'f'
-  0x04, //103 'g'
-  0x04, //104 'h'
-  0x04, //105 'i'
-  0x04, //106 'j'
-  0x04, //107 'k'
-  0x04, //108 'l'
-  0x04, //109 'm'
-  0x04, //110 'n'
-  0x04, //111 'o'
-  0x04, //112 'p'
-  0x04, //113 'q'
-  0x04, //114 'r'
-  0x04, //115 's'
-  0x04, //116 't'
-  0x04, //117 'u'
-  0x04, //118 'v'
-  0x04, //119 'w'
-  0x04, //120 'x'
-  0x04, //121 'y'
-  0x04, //122 'z'
-  0x00, //123
-  0x00, //124
-  0x00, //125
-  0x00, //126
+  0x18, //032 ' '
+  0x08, //033 '!'
+  0x00, //034 '"'
+  0x08, //035 '#'
+  0x08, //036 '$'
+  0x08, //037 '%'
+  0x08, //038 '&'
+  0x00, //039 '''
+  0x00, //040 '('
+  0x00, //041 ')'
+  0x09, //042 '*'
+  0x08, //043 '+'
+  0x08, //044 ','
+  0x08, //045 '-'
+  0x08, //046 '.'
+  0x08, //047 '/'
+  0x0A, //048 '0'
+  0x0A, //049 '1'
+  0x0A, //050 '2'
+  0x0A, //051 '3'
+  0x0A, //052 '4'
+  0x0A, //053 '5'
+  0x0A, //054 '6'
+  0x0A, //055 '7'
+  0x0A, //056 '8'
+  0x0A, //057 '9'
+  0x08, //058 ':'
+  0x08, //059 ';'
+  0x08, //060 '<'
+  0x08, //061 '='
+  0x08, //062 '>'
+  0x08, //063 '?'
+  0x08, //064 '@'
+  0x09, //065 'A'
+  0x09, //066 'B'
+  0x09, //067 'C'
+  0x09, //068 'D'
+  0x08, //069 'E'
+  0x09, //070 'F'
+  0x09, //071 'G'
+  0x09, //072 'H'
+  0x09, //073 'I'
+  0x09, //074 'J'
+  0x09, //075 'K'
+  0x09, //076 'L'
+  0x09, //077 'M'
+  0x09, //078 'N'
+  0x08, //079 'O'
+  0x09, //080 'P'
+  0x09, //081 'Q'
+  0x09, //082 'R'
+  0x09, //083 'S'
+  0x09, //084 'T'
+  0x08, //085 'U'
+  0x08, //086 'V'
+  0x08, //087 'W'
+  0x09, //088 'X'
+  0x09, //089 'Y'
+  0x09, //090 'Z'
+  0x08, //091 '['
+  0x08, //092 '\'
+  0x08, //093 ']'
+  0x08, //094 '^'
+  0x08, //095 '_'
+  0x08, //096 '`'
+  0x09, //097 'a'
+  0x09, //098 'b'
+  0x09, //099 'c'
+  0x09, //100 'd'
+  0x08, //101 'e'
+  0x09, //102 'f'
+  0x09, //103 'g'
+  0x09, //104 'h'
+  0x09, //105 'i'
+  0x09, //106 'j'
+  0x09, //107 'k'
+  0x09, //108 'l'
+  0x09, //109 'm'
+  0x09, //110 'n'
+  0x08, //111 'o'
+  0x09, //112 'p'
+  0x09, //113 'q'
+  0x09, //114 'r'
+  0x09, //115 's'
+  0x09, //116 't'
+  0x08, //117 'u'
+  0x08, //118 'v'
+  0x08, //119 'w'
+  0x09, //120 'x'
+  0x09, //121 'y'
+  0x09, //122 'z'
+  0x08, //123 '{'
+  0x08, //124 '|'
+  0x08, //125 '}'
+  0x08, //126 '~'
   0x00  //127
 };
 
@@ -187,7 +195,7 @@ static char charFlags[] =
 */
 
 
-const char* getSignValue(double *value, const char *string)
+static const char* parseSign(double *value, const char *string)
 {
   *value = 1.0; //Numbers are default positive.
 
@@ -201,65 +209,66 @@ const char* getSignValue(double *value, const char *string)
 }
 
 
-const char* getDigitsValue(double *value, int fractional, const char *string)
+static const char* parseDigits(double *value, int fractional, const char *string)
 {
   //Starting at most signicant digit of whole or fractional number.
   *value = 0.0;
-  int digitPlace = 0;
+  int place = 0;
 
   //Parse digits to value.
-  while(charFlags[*string] & DIGIT_MASK)
-    *value += (*(string)++ - '0') * tenToPowerOfNegative[++digitPlace];
+  while(CHAR_IS[*string] & IS_DIGIT_CHAR)
+    *value += (*(string++) - '0') * TEN_TO_POWER_NEGATIVE[++place];
 
   //Value is not fractional, shift value left of decimal point.
   if(!fractional)
-    *value *= tenToPowerOfPositive[digitPlace];
+    *value *= TEN_TO_POWER_POSITIVE[place];
 
   return string;
 }
 
 
-const char* getNumberValue(double *value, const char *string)
+static const char* parseNumber(double *value, const char *string)
 {
-  //Parse out the numbers components.
+  //Parse out the numbers components if present.
   double sign;
-  const char *afterSign = getSignValue(&sign, string);
+  const char *afterSign = parseSign(&sign, string);
   double whole;
-  const char *afterWhole = getDigitsValue(&whole, 0, afterSign);
+  const char *afterWhole = parseDigits(&whole, 0, afterSign);
   const char *afterDecimal = *afterWhole == '.' ? afterWhole + 1 : afterWhole;
   double fraction;
-  const char *afterFraction = getDigitsValue(&fraction, 1, afterDecimal);
+  const char *afterFraction = parseDigits(&fraction, 1, afterDecimal);
 
-  //Digit parsed, number parsed.
+  //Set default value in case number is not present.
+  *value = 0.0;
+
+  //One or more digits parsed, number is present.
   if(afterWhole - afterSign || afterFraction - afterDecimal)
   {
     *value = sign * (whole + fraction);
-    return afterFraction;
+    string = afterFraction;
   }
 
-  //No digits parsed, no number parsed.
-  *value = 0.0;
   return string;
 }
 
 
-const char* getParameters(char *letters, double *numbers, const char *string);
+static const char* parseArgument(char *argument, double *value, const char *string)
+{
+  //Set default values in case argument is not present.
+  *argument = '\0';
+  *value = 0.0;
 
-const char* getCommand(char* letters, double *numbers, const char *string);
+  //Argument is not present
+  if(!(CHAR_IS[*string] & IS_ARGUMENT_CHAR))
+    return string;
 
-const char* getComment(char* comment, const char *string);
+  //Parse argument and optional number.
+  *argument = *(string++);
+  return parseNumber(value, string);
+}
 
 
 int main()
 {
-  char character;
-  double number;
-
-  const char *remainingCommand = "M00002 t-24 x43.12";
-  printf("Command: %s\n", remainingCommand);
-
-  remainingCommand = getDecimalNumber(&number, remainingCommand+15);
-  printf("[%lf]%s\n", number, remainingCommand);
-
   return 0;
 }
