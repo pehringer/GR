@@ -2,16 +2,6 @@
 
 
 /*
-  Parser Settings.
-*/
-
-
-/*
-  Structures and Enumeration Below:
-*/
-
-
-/*
   Lookup Tables Below:
 */
 
@@ -48,12 +38,18 @@ static const double TEN_TO_POWER_POSITIVE[] =
 };
 
 
+/*
+  Sytax Equivalent Characters
+*/
+
+
 //Bit flags for elements of CHAR_IS.
 static const char IS_ARGUMENT_CHAR   = 0x01;
 static const char IS_DIGIT_CHAR      = 0x02;
 static const char IS_NEWLINE_CHAR    = 0x04;
 static const char IS_TEXT_CHAR       = 0x08;
 static const char IS_WHITESPACE_CHAR = 0x10;
+
 
 //Indexes are mapped to corresponding char values.
 //Each element holds a given chars bit flags.
@@ -197,7 +193,7 @@ static const char CHAR_IS[] =
 
 static const char* parseSign(double *value, const char *string)
 {
-  *value = 1.0; //Numbers are default positive.
+  *value = 1.0; //Numbers are default positive if no sign is present.
 
   switch(*string)
   {
@@ -219,7 +215,8 @@ static const char* parseDigits(double *value, int fractional, const char *string
   while(CHAR_IS[*string] & IS_DIGIT_CHAR)
     *value += (*(string++) - '0') * TEN_TO_POWER_NEGATIVE[++place];
 
-  //Value is not fractional, shift value left of decimal point.
+  //Digits represent a whole number, not a fractional number. Shift entire
+  //value left of the decimal point.
   if(!fractional)
     *value *= TEN_TO_POWER_POSITIVE[place];
 
@@ -230,18 +227,16 @@ static const char* parseDigits(double *value, int fractional, const char *string
 static const char* parseNumber(double *value, const char *string)
 {
   //Parse out the numbers components if present.
-  double sign;
+  double sign, whole, fraction;
   const char *afterSign = parseSign(&sign, string);
-  double whole;
   const char *afterWhole = parseDigits(&whole, 0, afterSign);
   const char *afterDecimal = *afterWhole == '.' ? afterWhole + 1 : afterWhole;
-  double fraction;
   const char *afterFraction = parseDigits(&fraction, 1, afterDecimal);
 
   //Set default value in case number is not present.
   *value = 0.0;
 
-  //One or more digits parsed, number is present.
+  //One or more digits parsed, number is present, calculate its value.
   if(afterWhole - afterSign || afterFraction - afterDecimal)
   {
     *value = sign * (whole + fraction);
@@ -258,7 +253,7 @@ static const char* parseArgument(char *argument, double *value, const char *stri
   *argument = '\0';
   *value = 0.0;
 
-  //Argument is not present
+  //Argument char is not present
   if(!(CHAR_IS[*string] & IS_ARGUMENT_CHAR))
     return string;
 
@@ -268,7 +263,19 @@ static const char* parseArgument(char *argument, double *value, const char *stri
 }
 
 
+
+
 int main()
 {
+  char letter;
+  double number;
+  char *command = "G01 x23.254";
+  const char *after = parseArgument(&letter, &number, command + 4);
+  if(after - (command + 4))
+    printf("[%c]", letter);
+  if(after - (command + 4) > 1)
+    printf("[%lf]", number);
+  printf("%s\n", after);
+
   return 0;
 }
