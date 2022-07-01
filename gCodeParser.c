@@ -39,7 +39,7 @@ static const double TEN_TO_POWER_POSITIVE[] =
 
 
 /*
-  Sytax Equivalent Characters
+  Equivalent Characters
 */
 
 
@@ -187,10 +187,14 @@ static const char CHAR_IS[] =
 
 
 /*
-  Parsing Below:
+  Argument Parsing:
 */
 
 
+/*
+  Returns: Given string pointer if no sign was parsed.
+           Given string pointer offset to char after sign if parsed.
+*/
 static const char* parseSign(double *value, const char *string)
 {
   *value = 1.0; //Numbers are default positive if no sign is present.
@@ -205,6 +209,10 @@ static const char* parseSign(double *value, const char *string)
 }
 
 
+/*
+  Returns: Given string pointer if no digits were parsed.
+           Given string pointer offset to char after digits if parsed.
+*/
 static const char* parseDigits(double *value, int fractional, const char *string)
 {
   //Starting at most signicant digit of whole or fractional number.
@@ -224,6 +232,10 @@ static const char* parseDigits(double *value, int fractional, const char *string
 }
 
 
+/*
+  Returns: Given string pointer if no number was parsed.
+           Given string pointer offset to char after number if parsed.
+*/
 static const char* parseNumber(double *value, const char *string)
 {
   //Parse out the numbers components if present.
@@ -247,6 +259,10 @@ static const char* parseNumber(double *value, const char *string)
 }
 
 
+/*
+  Returns: Given string pointer if no argument was parsed.
+           Given string pointer offset to char after argument if parsed.
+*/
 static const char* parseArgument(char *argument, double *value, const char *string)
 {
   //Set default values in case argument is not present.
@@ -263,6 +279,16 @@ static const char* parseArgument(char *argument, double *value, const char *stri
 }
 
 
+/*
+  Comment Parsing:
+*/
+
+
+static const char* parseText(char *text, const char *string);
+
+static const char* parseInlineComment(char *text, const char *string);
+
+static const char* parseEndingComment(char *text, const char *string);
 
 
 int main()
