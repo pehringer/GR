@@ -192,8 +192,11 @@ static const char CHAR_IS[] =
 
 
 /*
-  Returns: Given string pointer if no sign was parsed.
-           Given string pointer offset to char after sign if parsed.
+  Param value: filled with negative or positive one if returned pointer
+               is offset, else filled with positive one.
+  Param string: points to possible sign to be parsed.
+  Returns: given string pointer offset to char after sign if parsed,
+           else returns given string pointer if not parsed.
 */
 static const char* parseSign(double *value, const char *string)
 {
@@ -210,8 +213,13 @@ static const char* parseSign(double *value, const char *string)
 
 
 /*
-  Returns: Given string pointer if no digits were parsed.
-           Given string pointer offset to char after digits if parsed.
+  Param value: filled with numeric value if returned pointer is offset,
+               else filled with zero.
+  Param fractional: non-zero if digits are right of the decimal point,
+                    else zero if digits are left of the decimal point.
+  Param string: points to possible digits to be parsed.
+  Returns: given string pointer offset to char after digits if parsed,
+           else returns given string pointer if not parsed.
 */
 static const char* parseDigits(double *value, int fractional, const char *string)
 {
@@ -233,8 +241,11 @@ static const char* parseDigits(double *value, int fractional, const char *string
 
 
 /*
-  Returns: Given string pointer if no number was parsed.
-           Given string pointer offset to char after number if parsed.
+  Param value: filled with numeric value if returned pointer is offset,
+               else filled with zero.
+  Param string: points to possible number to be parsed.
+  Returns: given string pointer offset to char after number if parsed,
+           else returns given string pointer if not parsed.
 */
 static const char* parseNumber(double *value, const char *string)
 {
@@ -260,8 +271,13 @@ static const char* parseNumber(double *value, const char *string)
 
 
 /*
-  Returns: Given string pointer if no argument was parsed.
-           Given string pointer offset to char after argument if parsed.
+  Param argument: filled with letter value if returned pointer is offset,
+                  else filled with null character.
+  Param value: filled with numeric value if returned pointer is offset
+               by more than one, else filled with zero.
+  Param string: points to possible argument to be parsed.
+  Returns: given string pointer offset to char after argument if parsed,
+           else returns given string pointer if not parsed.
 */
 static const char* parseArgument(char *argument, double *value, const char *string)
 {
