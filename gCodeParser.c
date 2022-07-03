@@ -192,11 +192,12 @@ static const char CHAR_IS[] =
 
 
 /*
-  Param value: filled with negative or positive one if returned pointer
-               is offset, else filled with positive one.
+  Param value: double is filled with signs value if returned pointer
+               is greater than the given string pointer, else filled
+               with one.
   Param string: points to possible sign to be parsed.
-  Returns: given string pointer offset to char after sign if parsed,
-           else returns given string pointer if not parsed.
+  Returns: pointer to char after sign if parsed, else returns
+           given string pointer.
 */
 static const char* parseSign(double *value, const char *string)
 {
@@ -213,13 +214,14 @@ static const char* parseSign(double *value, const char *string)
 
 
 /*
-  Param value: filled with numeric value if returned pointer is offset,
-               else filled with zero.
+  Param value: double is filled with digits value if returned pointer
+               is greater than the given string pointer, else filled
+               with zero.
   Param fractional: non-zero if digits are right of the decimal point,
                     else zero if digits are left of the decimal point.
   Param string: points to possible digits to be parsed.
-  Returns: given string pointer offset to char after digits if parsed,
-           else returns given string pointer if not parsed.
+  Returns: pointer to char after digits if parsed, else returns
+           given string pointer.
 */
 static const char* parseDigits(double *value, int fractional, const char *string)
 {
@@ -241,11 +243,11 @@ static const char* parseDigits(double *value, int fractional, const char *string
 
 
 /*
-  Param value: filled with numeric value if returned pointer is offset,
-               else filled with zero.
+  Param value: double is filled if the returned pointer is greater
+               than the given string pointer.
   Param string: points to possible number to be parsed.
-  Returns: given string pointer offset to char after number if parsed,
-           else returns given string pointer if not parsed.
+  Returns: pointer to char after number if parsed, else returns
+           given string pointer.
 */
 static const char* parseNumber(double *value, const char *string)
 {
@@ -256,35 +258,27 @@ static const char* parseNumber(double *value, const char *string)
   const char *afterDecimal = *afterWhole == '.' ? afterWhole + 1 : afterWhole;
   const char *afterFraction = parseDigits(&fraction, 1, afterDecimal);
 
-  //Set default value in case number is not present.
-  *value = 0.0;
+  //No digits parsed, no number.
+  if( !((afterWhole - afterSign) + (afterFraction - afterDecimal)) )
+    return string;
 
-  //One or more digits parsed, number is present, calculate its value.
-  if(afterWhole - afterSign || afterFraction - afterDecimal)
-  {
-    *value = sign * (whole + fraction);
-    string = afterFraction;
-  }
-
-  return string;
+  //Calculate numbers value.
+  *value = sign * (whole + fraction);
+  return afterFraction;
 }
 
 
 /*
-  Param argument: filled with letter value if returned pointer is offset,
-                  else filled with null character.
-  Param value: filled with numeric value if returned pointer is offset
-               by more than one, else filled with zero.
+  Param argument: char is filled if the returned pointer is greater
+                  than the given string pointer.
+  Param value: double is filled if the returned pointer is greater
+               than the given string pointer plus one.
   Param string: points to possible argument to be parsed.
-  Returns: given string pointer offset to char after argument if parsed,
-           else returns given string pointer if not parsed.
+  Returns: pointer to char after argument if parsed, else returns
+           given string pointer.
 */
 static const char* parseArgument(char *argument, double *value, const char *string)
 {
-  //Set default values in case argument is not present.
-  *argument = '\0';
-  *value = 0.0;
-
   //Argument char is not present
   if(!(CHAR_IS[*string] & IS_ARGUMENT_CHAR))
     return string;
