@@ -370,6 +370,32 @@ static const char* parseEndingComment(char *buffer, int capacity, const char *st
 }
 
 
+/*
+  Param string: points to possible newline(s) to be parsed.
+  Returns: pointer to char after newline(s) if parsed, else
+           returns given string pointer.
+*/
+static const char* parseNewline(const char *string)
+{
+  //Skip newline chars.
+  while(CHAR_IS[*string] & IS_NEWLINE_CHAR)
+    string++;
+  return string;
+}
+
+
+/*
+  Param string: points to possible whitespace(s) to be parsed.
+  Returns: pointer to char after whitespace(s) if parsed, else
+           returns given string pointer.
+*/
+static const char* parseWhitespace(const char *string)
+{
+  //Skip whitespace chars.
+  while(CHAR_IS[*string] & IS_WHITESPACE_CHAR)
+    string++;
+  return string;
+}
 
 
 
@@ -377,15 +403,14 @@ static const char* parseEndingComment(char *buffer, int capacity, const char *st
 int main()
 {
   char *command = "G01 X10.44 (okay boomer) Y0.031;\n";
+  char letter;
+  double number;
 
-  char buffer[32];
-  const char *after = parseEndingComment(buffer, 32, (command + 31));
-  if(after - (command + 31))
-  {
-    printf("[%s]", buffer);
-    printf("[%d]", after - (command + 31));
-  }
-
+  const char *after = parseArgument(&letter, &number, command);
+  if(after - (command) > 0)
+    printf("[%c]", letter);
+  if(after - (command) > 1)
+    printf("[%lf]", number);
   printf("%s\n", after);
 
   return 0;
