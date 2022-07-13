@@ -192,9 +192,9 @@ static const char CHAR_IS[] =
 
 
 /*
-Returns:
-  pointer to char after sign.
-Given value is always filled.
+returns: Pointer to char after sign.
+value: Always filled.
+string: Points to possible sign to parse.
 */
 static const char* parseSign(double *value, const char *string)
 {
@@ -213,14 +213,12 @@ static const char* parseSign(double *value, const char *string)
 
 
 /*
-Returns:
-  Given string if not parsed.
-  Pointer to char after digits if parsed.
-Given value will be filled if:
-  (returned pointer > given string pointer)
-Given fractional should be:
-  Non-zero if digits are right of the decimal point.
-  Zero if digits are left of the decimal point.
+returns: Given string if not parsed.
+         Pointer to char after digits if parsed.
+value: Filled if (returned pointer > given string pointer).
+fractional: Non-zero if digits are right of the decimal point.
+            Zero if digits are left of the decimal point.
+string: Points to possible digits to parse.
 */
 static const char* parseDigits(double *value, int fractional, const char *string)
 {
@@ -241,11 +239,10 @@ static const char* parseDigits(double *value, int fractional, const char *string
 }
 
 /*
-Returns:
-  Given string if not parsed.
-  Pointer to char after number if parsed.
-Given value filled if:
-  (returned pointer > given string pointer)
+returns: Given string if not parsed.
+         Pointer to char after number if parsed.
+value: Filled if (returned pointer > given string pointer).
+string: Points to possible number to parse.
 */
 static const char* parseNumber(double *value, const char *string)
 {
@@ -268,13 +265,11 @@ static const char* parseNumber(double *value, const char *string)
 
 
 /*
-Returns:
-  Given string if not parsed.
-  Pointer to char after argument if parsed.
-Given argument filled if:
-  (returned pointer > given string pointer)
-Given value filled if:
-  (returned pointer > given string pointer + 1)
+returns: Given string if not parsed.
+         Pointer to char after argument if parsed.
+argument: Filled if (returned pointer > given string pointer).
+value: Filled if (returned pointer > given string pointer + 1).
+string: Points to possible argument to parse.
 */
 static const char* parseArgument(char *argument, double *value, const char *string)
 {
@@ -289,11 +284,12 @@ static const char* parseArgument(char *argument, double *value, const char *stri
 
 
 /*
-Returns:
-  Given string if not parsed.
-  Pointer to char after text if parsed.
-Given buffer filled with this many chars if parsed:
-  (returned pointer - given string pointer)
+returns: Given string if not parsed.
+         Pointer to char after text if parsed.
+buffer: Filled with N chars if parsed where N =
+        (returned pointer - given string pointer).
+capacity: Number of chars the buffer can hold.
+string: Points to possible text to parse.
 */
 static const char* parseText(char *buffer, int capacity, const char *string)
 {
@@ -306,11 +302,12 @@ static const char* parseText(char *buffer, int capacity, const char *string)
 
 
 /*
-Returns:
-  Given string if not parsed.
-  Pointer to char after inline comment if parsed.
-Given buffer filled with this many chars if parsed:
-  (returned pointer > given string pointer - 2)
+returns: Given string if not parsed.
+         Pointer to char after inline comment if parsed.
+buffer: Filled with N chars if parsed where N =
+        (returned pointer > given string pointer - 2).
+capacity: Number of chars the buffer can hold.
+string: Points to possible inline comment to parse.
 */
 static const char* parseInlineComment(char *buffer, int capacity, const char *string)
 {
@@ -331,11 +328,12 @@ static const char* parseInlineComment(char *buffer, int capacity, const char *st
 
 
 /*
-Returns:
-  Given string if not parsed.
-  Pointer to char after ending comment if parsed.
-buffer will filled with this many chars if parsed:
-  (returned pointer > given string pointer - 1)
+returns: Given string if not parsed.
+         Pointer to char after ending comment if parsed.
+buffer: Filled with N chars if parsed where N =
+        (returned pointer > given string pointer - 1).
+capacity: Number of chars the buffer can hold.
+string: Points to possible ending comment to parse.
 */
 static const char* parseEndingComment(char *buffer, int capacity, const char *string)
 {
@@ -349,9 +347,9 @@ static const char* parseEndingComment(char *buffer, int capacity, const char *st
 
 
 /*
-Returns:
-  Given string if not parsed.
-  Pointer to char after newline if parsed.
+returns: Given string if not parsed.
+         Pointer to char after newline if parsed.
+string: Points to possible newline to parse.
 */
 static const char* parseNewline(const char *string)
 {
@@ -363,9 +361,9 @@ static const char* parseNewline(const char *string)
 }
 
 /*
-Returns:
-  Given string if not parsed.
-  Pointer to char after whitespace if parsed.
+returns: Given string if not parsed.
+         Pointer to char after whitespace if parsed.
+string: Points to possible whitespace to parse.
 */
 static const char* parseWhitespace(const char *string)
 {
