@@ -2,53 +2,16 @@
 
 
 /*
-  Lookup Tables Below:
-*/
-
-
-static const double TEN_TO_POWER_NEGATIVE[] =
-{
-  1.0,
-  0.1,
-  0.01,
-  0.001,
-  0.0001,
-  0.00001,
-  0.000001,
-  0.0000001,
-  0.00000001,
-  0.000000001,
-  0.0000000001
-};
-
-
-static const double TEN_TO_POWER_POSITIVE[] =
-{
-  1.0,
-  10.0,
-  100.0,
-  1000.0,
-  10000.0,
-  100000.0,
-  1000000.0,
-  10000000.0,
-  100000000.0,
-  1000000000.0,
-  10000000000.0
-};
-
-
-/*
   Equivalent Characters
 */
 
 
 static enum CharType {
-  ARGUMENT   = 0x01,
-  DIGIT      = 0x02,
-  NEWLINE    = 0x04,
-  TEXT       = 0x08,
-  WHITESPACE = 0x10
+  ARGUMENT_CHAR   = 0x01,
+  DIGIT_CHAR      = 0x02,
+  NEWLINE_CHAR    = 0x04,
+  TEXT_CHAR       = 0x08,
+  WHITESPACE_CHAR = 0x10
 } placeHolderForCompileError;
 
 
@@ -60,7 +23,8 @@ static enum CharType {
 */
 static int Equivalent(enum CharType type, char character)
 {
-  static const char uses[] =
+  //Lookup table.
+  static const char USES[] =
   {
     0x00, //000
     0x00, //001
@@ -192,7 +156,7 @@ static int Equivalent(enum CharType type, char character)
     0x00  //127
   };
 
-  return uses[character] & type;
+  return USES[character] & type;
 }
 
 
@@ -206,7 +170,7 @@ static int Equivalent(enum CharType type, char character)
   value: Always filled.
   string: Points to possible sign to parse.
 */
-static const char* ParseSign(double *value, const char *string)
+static const char* Sign(double *value, const char *string)
 {
   //Numbers are default positive if no sign is present.
   *value = 1.0;
@@ -225,16 +189,45 @@ static const char* ParseSign(double *value, const char *string)
            Pointer to char after digits if parsed.
   value: Filled if (returned pointer > given string pointer).
   fractional: Non-zero if digits are right of the decimal point.
-            Zero if digits are left of the decimal point.
+              Zero if digits are left of the decimal point.
   string: Points to possible digits to parse.
 */
-static const char* ParseDigits(double *value, int fractional, const char *string)
+static const char* Digits(double *value, int fractional, const char *string)
 {
+  //Lookup Tables.
+  static const double TEN_TO_POWER_NEGATIVE[] =
+  {
+    1.0,
+    0.1,
+    0.01,
+    0.001,
+    0.0001,
+    0.00001,
+    0.000001,
+    0.0000001,
+    0.00000001,
+    0.000000001,
+    0.0000000001
+  };
+  static const double TEN_TO_POWER_POSITIVE[] =
+  {
+    1.0,
+    10.0,
+    100.0,
+    1000.0,
+    10000.0,
+    100000.0,
+    1000000.0,
+    10000000.0,
+    100000000.0,
+    1000000000.0,
+    10000000000.0
+  };
   //Starting at most signicant digit of whole or fractional number.
   *value = 0.0;
   int place = 0;
   //Parse digits to value.
-  while(Equivalent(DIGIT, *string))
+  while(Equivalent(DIGIT_CHAR, *string))
     *value += (*(string++) - '0') * TEN_TO_POWER_NEGATIVE[++place];
   //Digits represent a whole number, not a fractional number. Shift entire
   //value left of the decimal point.
@@ -251,14 +244,14 @@ static const char* ParseDigits(double *value, int fractional, const char *string
   value: Filled if (returned pointer > given string pointer).
   string: Points to possible number to parse.
 */
-static const char* ParseNumber(double *value, const char *string)
+static const char* Number(double *value, const char *string)
 {
   //Parse out the numbers components if present.
   double sign, whole, fraction;
-  const char *afterSign = ParseSign(&sign, string);
-  const char *afterWhole = ParseDigits(&whole, 0, afterSign);
+  const char *afterSign = Sign(&sign, string);
+  const char *afterWhole = Digits(&whole, 0, afterSign);
   const char *afterDecimal = *afterWhole == '.' ? afterWhole + 1 : afterWhole;
-  const char *afterFraction = ParseDigits(&fraction, 1, afterDecimal);
+  const char *afterFraction = Digits(&fraction, 1, afterDecimal);
   //No digits parsed, no number.
   if( !((afterWhole - afterSign) + (afterFraction - afterDecimal)) )
     return string;
@@ -275,28 +268,14 @@ static const char* ParseNumber(double *value, const char *string)
   value: Filled if (returned pointer > given string pointer + 1).
   string: Points to possible argument to parse.
 */
-static const char* ParseArgument(char *letter, double *value, const char *string)
+static const char* Argument(char *letter, double *value, const char *string)
 {
   //No argument.
-  if(!Equivalent(ARGUMENT, *string))
+  if(!Equivalent(ARGUMENT_CHAR, *string))
     return string;
   //Parse argument and optional number.
   *letter = *string;
-  return ParseNumber(value, ++string);
-}
-
-
-/*
-  returns: Given string if not parsed.
-           Pointer to char after chars of given type if parsed.
-  string: Points to possible chars of given type to parse.
-*/
-static const char* Parse(enum CharType type, const char* string)
-{
-  //Skip chars of given type.
-  while(Equivalent(type, *string))
-    string++;
-  return string;
+  return Number(value, ++string);
 }
 
 
@@ -305,13 +284,14 @@ static const char* Parse(enum CharType type, const char* string)
            Pointer to char after inline comment if parsed.
   string: Points to possible inline comment to parse.
 */
-static const char* ParseInlineComment(const char *string)
+static const char* InlineComment(const char *string)
 {
   //No opening parenthesis.
   if(*string != '(')
     return string;
   //Parse Optional text.
-  const char *afterText = Parse(TEXT, string + 1);
+  const char *afterText = string;
+  while(Equivalent(TEXT_CHAR, *(++afterText)));
   //No closing parenthesis.
   if(*afterText != ')')
     return string;
@@ -325,13 +305,14 @@ static const char* ParseInlineComment(const char *string)
            Pointer to char after ending comment if parsed.
   string: Points to possible ending comment to parse.
 */
-static const char* ParseEndingComment(const char *string)
+static const char* EndingComment(const char *string)
 {
   //No starting semicolon.
   if(*string != ';')
     return string;
-  //Parse Optional text.
-  return Parse(TEXT, ++string);
+  while(Equivalent(TEXT_CHAR, *(++string)));
+  //Char after ending comment.
+  return string;
 }
 
 
@@ -346,12 +327,13 @@ int main()
   char letter;
   double number;
 
-  const char *after = ParseArgument(&letter, &number, (command+12));
-  if(after - (command+12) > 0)
+  const char *after = Argument(&letter, &number, (command+4));
+  if(after - (command+4) > 0)
     printf("[%c]", letter);
-  if(after - (command+12) > 1)
+  if(after - (command+4) > 1)
     printf("[%lf]", number);
   printf("%s\n", after);
 
   return 0;
 }
+
