@@ -187,7 +187,7 @@ static const char* Sign(double *value, const char *string)
 /*
   returns: Given string if not parsed.
            Pointer to char after digits if parsed.
-  value: Filled if (returned pointer > given string pointer).
+  value: Filled with number value if (returned pointer > given string pointer).
   fractional: Non-zero if digits are right of the decimal point.
               Zero if digits are left of the decimal point.
   string: Points to possible digits to parse.
@@ -195,6 +195,7 @@ static const char* Sign(double *value, const char *string)
 static const char* Digits(double *value, int fractional, const char *string)
 {
   //Lookup Tables.
+  static const int MAX_POWER = 10;
   static const double TEN_TO_POWER_NEGATIVE[] =
   {
     1.0,
@@ -226,8 +227,8 @@ static const char* Digits(double *value, int fractional, const char *string)
   //Starting at most signicant digit of whole or fractional number.
   *value = 0.0;
   int place = 0;
-  //Parse digits to value.
-  while(Equivalent(DIGIT_CHAR, *string))
+  //Parse digits to value. Limit places to look table size.
+  while(Equivalent(DIGIT_CHAR, *string) && place < MAX_POWER)
     *value += (*(string++) - '0') * TEN_TO_POWER_NEGATIVE[++place];
   //Digits represent a whole number, not a fractional number. Shift entire
   //value left of the decimal point.
@@ -241,7 +242,7 @@ static const char* Digits(double *value, int fractional, const char *string)
 /*
   returns: Given string if not parsed.
            Pointer to char after number if parsed.
-  value: Filled if (returned pointer > given string pointer).
+  value: Filled with number value if (returned pointer > given string pointer).
   string: Points to possible number to parse.
 */
 static const char* Number(double *value, const char *string)
@@ -264,8 +265,8 @@ static const char* Number(double *value, const char *string)
 /*
   returns: Given string if not parsed.
            Pointer to char after argument if parsed.
-  letter: Filled if (returned pointer > given string pointer).
-  value: Filled if (returned pointer > given string pointer + 1).
+  letter: Filled with letter if (returned pointer > given string pointer).
+  value: Filled number value if (returned pointer > given string pointer + 1).
   string: Points to possible argument to parse.
 */
 static const char* Argument(char *letter, double *value, const char *string)
@@ -280,43 +281,83 @@ static const char* Argument(char *letter, double *value, const char *string)
 
 
 /*
-  returns: Given string if not parsed.
+  returns: Given string if not parsed or comment is to long for buffer.
            Pointer to char after inline comment if parsed.
+  buffer: Filled with null delimited comment text if (returned pointer >
+          given string pointer).
+  capacity: Size of the buffer.
   string: Points to possible inline comment to parse.
 */
-static const char* InlineComment(const char *string)
+static const char* InlineComment(char* buffer, int capacity, const char *string)
 {
   //No opening parenthesis.
   if(*string != '(')
     return string;
   //Parse Optional text.
-  const char *afterText = string;
-  while(Equivalent(TEXT_CHAR, *(++afterText)));
-  //No closing parenthesis.
-  if(*afterText != ')')
+  int index = 0;
+  const char *current = string + 1;
+  while(index < (capacity - 1) && Equivalent(TEXT_CHAR, *current))
+    buffer[index++] = *(current++);
+  //Text is to long or no closing parenthesis.
+  if(*current != ')')
     return string;
-  //Char after closing parenthesis.
-  return ++afterText;
+  //Successfully pasred comment.
+  buffer[index] = '\0';
+  return ++current;
+}
+
+
+/*
+  returns: Given string if not parsed or comment is to long for buffer.
+           Pointer to char after ending comment if parsed.
+  buffer: Filled with null delimited comment string if (returned pointer >
+          given string pointer).
+  capacity: Size of the buffer.
+  string: Points to possible ending comment to parse.
+*/
+static const char* EndingComment(char* buffer, int capacity, const char *string)
+{
+  //No starting semicolon.
+  if(*string != ';')
+    return string;
+  //Parse Optional text.
+  int index = 0;
+  const char *current = string + 1;
+  while(index < (capacity - 1) && Equivalent(TEXT_CHAR, *current))
+    buffer[index++] = *(current++);
+  //Text is to long or no newline.
+  if(!Equivalent(NEWLINE_CHAR, *current))
+    return string;
+  //Successfully pasred comment.
+  buffer[index] = '\0';
+  return current;
 }
 
 
 /*
   returns: Given string if not parsed.
-           Pointer to char after ending comment if parsed.
-  string: Points to possible ending comment to parse.
+           Pointer to char after newline if parsed.
+  string: Points to possible newline to parse.
 */
-static const char* EndingComment(const char *string)
+static const char* Newline(const char *string)
 {
-  //No starting semicolon.
-  if(*string != ';')
-    return string;
-  while(Equivalent(TEXT_CHAR, *(++string)));
-  //Char after ending comment.
+  while(Equivalent(NEWLINE_CHAR, *string))
+    string++;
   return string;
 }
 
 
-
+/*
+  returns: Given string if not parsed.
+           Pointer to char after whitespace if parsed.
+  string: Points to possible whitespace to parse.
+*/
+static const char* Whitespace(const char *string)
+{
+  while(Equivalent(WHITESPACE_CHAR, *string))
+    string++;
+  return string;
+}
 
 
 int main()
@@ -324,16 +365,13 @@ int main()
   char *command = "G01 X10.44 (okay boomer)  Y0.031;\t \tlotta space\n\r"
                   "G42 X Y Z; all axes.\n"
                   ";End of g-code\n";
-  char letter;
-  double number;
 
-  const char *after = Argument(&letter, &number, (command+4));
-  if(after - (command+4) > 0)
-    printf("[%c]", letter);
-  if(after - (command+4) > 1)
-    printf("[%lf]", number);
-  printf("%s\n", after);
+  char buffer[12];
+  const char *after = InlineComment(buffer, 12, command+11);
 
+  if(after - (command+11) > 0)
+    printf("[%s]", buffer);
+  printf("%s", after);
   return 0;
 }
 
