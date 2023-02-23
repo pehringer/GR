@@ -1,7 +1,7 @@
 # G-Code Reader (gcr)
 
 ### Functionality
-Provides an interface to read in G-code commands from G-code files. Mainly targeted at reading in the subset G-code commands and syntax that 3d printer slicers produce.
+Provides an interface to read in G-code commands from G-code files. Mainly targeted at reading in the subset of G-code syntax that 3D printer slicers produce. The code is highly portable and designed to be runnable on small 8-bit microcontrollers.
 
 ### G-Code Syntax Definitions
 Vaild G-code file syntax for the reader are defined below in Backus–Naur form. Any syntax that does not match these definitions will result in an error code and or undefined behavior. The below definitions do not come from any one predefined standard, but rather results of my own research and experience with G-code.
